@@ -3,9 +3,13 @@ package main
 import "fmt"
 
 func main() {
-	for x := 3; x>0; x-- {
-		fmt.Println(x)
-	}
-	fmt.Println("astalabista")
-fmt.Println("I win the seria")
+	var width, height, area float64
+	width = 4.2
+	height = 3.0
+	area = width * height
+	fmt.Printf("%.2f liters needed\n", area/10.0)
+	width = 5.2
+	height = 3.5
+	area = width * height
+	fmt.Printf("%.2f liters needed\n", area/10.0)
 }
