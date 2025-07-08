@@ -1,15 +1,20 @@
 package main
 
-import "fmt"
+import ("fmt"; "errors"; "log")
+
+func paintCalculator(width, height float64) (float64, error) {
+	if width <= 0 || height <= 0 {
+		err := errors.New("entered data is not correct")
+		return 0, err
+	}
+	area := width*height/10.0
+	return area, nil
+}
 
 func main() {
-	var width, height, area float64
-	width = 4.2
-	height = 3.0
-	area = width * height
-	fmt.Printf("%.2f liters needed\n", area/10.0)
-	width = 5.2
-	height = 3.5
-	area = width * height
-	fmt.Printf("%.2f liters needed\n", area/10.0)
+	liters, state := paintCalculator(0.0, 15.0)
+	if state != nil {
+		log.Fatal(state)
+	}
+	fmt.Printf("You need %.2f liters\n", liters)
 }
