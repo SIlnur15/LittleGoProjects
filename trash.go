@@ -1,14 +1,15 @@
 package main
 
-import ("fmt"; "reflect")
+import "fmt"
+
+var num int16 = 15
+
+func Double(numPointer *int16) {
+	*numPointer = *numPointer*2
+	fmt.Println(*numPointer)
+}
 
 func main() {
-	var myInt int
-	var myIntPointer *int
-	myInt = 42
-	myIntPointer = &myInt
-	fmt.Println(myIntPointer)
-	fmt.Println(*myIntPointer) 						// 42
-	fmt.Println(reflect.TypeOf(myIntPointer)) 		// *int
-	fmt.Println(reflect.TypeOf(*myIntPointer)) 		// int
+	Double(&num)
+	fmt.Println(num)
 }
