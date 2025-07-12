@@ -1,3 +1,7 @@
 go 1.23.1
 
-use ./keyboard
+use (
+	./keyboard
+	./trsh
+	./trsh/trsh2
+)
