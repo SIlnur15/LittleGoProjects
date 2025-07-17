@@ -1,19 +1,17 @@
 package main
 
-import ("fmt"; "os"; "strconv"; "log"; "math")
-// import ("fmt"; "math")
+import "fmt"
+
+type myType struct {
+	name   string
+	counts int
+	flag   bool
+}
 
 func main() {
-	maximum := math.Inf(-1)
-	inputing := os.Args[1:]
-	for _, value := range inputing {
-		value, error := strconv.ParseFloat(value, 64)
-		if error != nil {
-			log.Fatal(error)
-		}
-		if maximum <= value {
-			maximum = value
-		}
-	}
-	fmt.Println(maximum)
+	var special1 myType
+	special1.counts = 25
+	special1.name = "number512"
+	fmt.Println(special1)
+	fmt.Println(special1.counts)
 }
