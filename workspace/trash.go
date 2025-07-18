@@ -3,15 +3,17 @@ package main
 import "fmt"
 
 type myType struct {
-	name   string
-	counts int
-	flag   bool
+	name  string
+	value int
+}
+
+func expreience(param *int) {
+	*param += 2
 }
 
 func main() {
-	var special1 myType
-	special1.counts = 25
-	special1.name = "number512"
-	fmt.Println(special1)
-	fmt.Println(special1.counts)
+	var man myType
+	fmt.Println(man.value)
+	expreience(&man.value)
+	fmt.Println(man.value)
 }
