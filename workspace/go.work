@@ -1,7 +1,7 @@
-go 1.23
+go 1.18
 
 use (
+	./calendar
+	./calendar/trsh2
 	./keyboard
-	./trsh
-	./trsh/trsh2
 )

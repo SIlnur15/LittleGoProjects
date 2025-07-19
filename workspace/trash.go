@@ -1,19 +1,14 @@
 package main
 
-import "fmt"
-
-type myType struct {
-	name  string
-	value int
-}
-
-func expreience(param *int) {
-	*param += 2
-}
+import (
+	"calendar"
+	"fmt"
+)
 
 func main() {
-	var man myType
-	fmt.Println(man.value)
-	expreience(&man.value)
-	fmt.Println(man.value)
+	var value calendar.Date
+	value.SetDay(22)
+	value.SetMonth(2)
+	value.SetYear(1994)
+	fmt.Println(value)
 }
