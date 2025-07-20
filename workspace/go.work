@@ -1,7 +1,3 @@
 go 1.18
 
-use (
-	./calendar
-	./calendar/trsh2
-	./keyboard
-)
+use ./dates

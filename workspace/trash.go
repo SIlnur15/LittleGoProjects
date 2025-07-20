@@ -1,14 +1,27 @@
 package main
 
 import (
-	"calendar"
+	"dates"
 	"fmt"
+	"log"
 )
 
 func main() {
-	var value calendar.Date
-	value.SetDay(22)
-	value.SetMonth(2)
-	value.SetYear(1994)
-	fmt.Println(value)
+	interest := dates.Dates{}
+	err := interest.SetDay(22)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = interest.SetMonth(2)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = interest.SetYear(1994)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(interest)
+	fmt.Println(interest.Day())
+	fmt.Println(interest.Month())
+	fmt.Println(interest.Year())
 }
