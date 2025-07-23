@@ -1,44 +1,26 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
-type myInterface interface {
-	PlayMusic(string)
-	StopMusic()
+type futureError float64
+
+func (f futureError) Error() string {
+	return fmt.Sprint("this value (%0.2f) is too hot", f)
 }
 
-type Player string
-
-func (p Player) PlayMusic(sng string) {
-	fmt.Printf("it's time to play that very good song - %s\n", sng)
-}
-
-func (p Player) StopMusic() {
-	fmt.Println("stop music")
-}
-
-type Recorder string
-
-func (r Recorder) PlayMusic(sng string) {
-	fmt.Printf("it's time to play that very good song - %s\n", sng)
-}
-
-func (r Recorder) StopMusic() {
-	fmt.Println("stop music")
-}
-
-func Sonic(r myInterface, songs []string) {
-	for _, song := range songs {
-		r.PlayMusic(song)
+func overHeatDefiner(now float64, base float64) error {
+	if base < now {
+		return futureError(now)
 	}
-	r.StopMusic()
+	return nil
 }
 
 func main() {
-	player := Player("")
-	var experience myInterface = player
-	listOfSongs := []string{"mother", "i", "love"}
-	Sonic(experience, listOfSongs)
-	experience = Recorder("")
-	Sonic(experience, listOfSongs)
+	var err error = overHeatDefiner(55.0, 25.0)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
