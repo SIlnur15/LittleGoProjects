@@ -1,26 +1,14 @@
 package main
 
-import (
-	"fmt"
-	"log"
-)
+import "fmt"
 
-type futureError float64
-
-func (f futureError) Error() string {
-	return fmt.Sprint("this value (%0.2f) is too hot", f)
-}
-
-func overHeatDefiner(now float64, base float64) error {
-	if base < now {
-		return futureError(now)
-	}
-	return nil
+func toPrint(mc chan int) {
+	mc <- 555
 }
 
 func main() {
-	var err error = overHeatDefiner(55.0, 25.0)
-	if err != nil {
-		log.Fatal(err)
-	}
+	var myChanel chan int
+	myChanel = make(chan int)
+	go toPrint(myChanel)
+	fmt.Println(<-myChanel)
 }
