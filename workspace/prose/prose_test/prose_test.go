@@ -24,6 +24,8 @@ func TestElements(t *testing.T) {
 	}
 }
 
+// it's time to study Go ahead
+
 // func TestOneElement(t *testing.T) {
 // 	interest := []string{"apples"}
 // 	returned := prose.JoinWithCommas(interest)
