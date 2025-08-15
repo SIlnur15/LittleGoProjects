@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
-	"prose"
+	"time"
 )
 
 func main() {
-	phrases := []string{"my parents", "a rodeo clown"}
-	fmt.Println("A photo of", prose.JoinWithCommas(phrases))
-	phrases = []string{"my parents", "a rodeo clown", "a prize bull"}
-	fmt.Println("A photo of", prose.JoinWithCommas(phrases))
+	// считываем временной отрезок из os.Stdin
+	// гарантируется, что значение корректное
+	var s string
+	fmt.Scan(&s)
+	d, _ := time.ParseDuration(s)
+
+	// выведите исходное значение (s) и количество минут в нем в формате "исходное = X min"
+	// используйте метод .Minutes() объекта d
+	fmt.Printf("%s = %v min", s, d.Minutes())
 }
