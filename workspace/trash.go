@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"math"
 )
 
 func main() {
-	// считываем временной отрезок из os.Stdin
-	// гарантируется, что значение корректное
-	var s string
-	fmt.Scan(&s)
-	d, _ := time.ParseDuration(s)
-
-	// выведите исходное значение (s) и количество минут в нем в формате "исходное = X min"
-	// используйте метод .Minutes() объекта d
-	fmt.Printf("%s = %v min", s, d.Minutes())
+	var input1, input2, input3, input4 float64             // ф-я math.Pow требует такой тип
+	_, err := fmt.Scan(&input1, &input2, &input3, &input4) // считываем числа из os.Stdin
+	if err != nil {
+		fmt.Println("wrong entering:", err)
+		return
+	}
+	under_sqrt := math.Pow(input1-input3, 2) + math.Pow(input2-input4, 2)
+	d := math.Pow(under_sqrt, 0.5) // attention 1/2 не покатит !!!
+	fmt.Println(d)
 }
