@@ -3,16 +3,16 @@ package main
 import "fmt"
 
 func main() {
-	i := 1
-	fmt.Print("Write ", i, " as ")
-	switch i {
-	case 1:
-		fmt.Println("one")
-		fallthrough
-	case 2:
-		fmt.Println("two")
-		// fallthrough
-	case 3:
-		fmt.Println("Bye-bye")
+	var code string
+	fmt.Scan(&code)
+	switch code {
+	case "en":
+		fmt.Println("English")
+	case "fr":
+		fmt.Println("French")
+	case "ru", "rus":
+		fmt.Println("Russian")
+	default:
+		fmt.Println("Unknown")
 	}
 }
