@@ -2,17 +2,10 @@ package main
 
 import "fmt"
 
+func sum(a int, b int) int {
+	return a + b
+}
+
 func main() {
-	var code string
-	fmt.Scan(&code)
-	switch code {
-	case "en":
-		fmt.Println("English")
-	case "fr":
-		fmt.Println("French")
-	case "ru", "rus":
-		fmt.Println("Russian")
-	default:
-		fmt.Println("Unknown")
-	}
+	fmt.Println(sum(5, 15))
 }
