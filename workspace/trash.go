@@ -2,10 +2,14 @@ package main
 
 import "fmt"
 
-func sum(a int, b int) int {
-	return a + b
-}
-
 func main() {
-	fmt.Println(sum(5, 15))
+	// var a int = 25
+
+	var b int = 25 * 2
+
+	var a int = b + 3
+
+	var c int = a - b
+	fmt.Println(c)
+
 }
