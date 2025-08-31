@@ -1,15 +1,31 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
 
 func main() {
-	// var a int = 25
-
-	var b int = 25 * 2
-
-	var a int = b + 3
-
-	var c int = a - b
-	fmt.Println(c)
-
+	new_scanner := bufio.NewScanner(os.Stdin)
+	for new_scanner.Scan() {
+		name := new_scanner.Text()
+		fmt.Print(name)
+	}
 }
+
+// func main() {
+// 	new_scanner := bufio.NewScanner(os.Stdin)
+// 	for new_scanner.Scan() {
+// 		name := new_scanner.Text()
+// 		fmt.Print(name)
+// 	}
+// }
+
+// func main() {
+// 	new_scanner := bufio.NewScanner(os.Stdin)
+// 	for new_scanner.Scan() {
+// 		name := new_scanner.Text()
+// 		fmt.Print(name)
+// 	}
+// }
