@@ -1,15 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-	var x int
-	fmt.Scan(&x)
-
-	fmt.Print(1)
-
-	if x != 5 {
-		fmt.Print(2)
+	var input int
+	fmt.Scan(&input)
+	if (input%4 == 0 && input%100 != 0) || input%400 == 0 {
+		fmt.Println("YES")
+	} else {
+		fmt.Println("NO")
 	}
-	fmt.Print(3)
 }
