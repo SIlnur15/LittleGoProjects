@@ -1,10 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-	var input int
-	fmt.Scan(&input)
-	fmt.Printf("%T\n", input/2)
-	fmt.Println(input / 2)
+	i := 2
+	var n int
+	fmt.Scan(&n)
+	for n%i != 0 {
+		i++
+	}
+	fmt.Println(i)
 }
