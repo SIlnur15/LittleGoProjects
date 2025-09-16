@@ -1,14 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
 
 func main() {
-	res := 0
-	nums := [5]int{1, 2, 3, 4, 5}
-	for i, v := range nums {
-		if i%2 != 0 {
-			res += v
-		}
-	}
-	fmt.Println(res)
+	input := bufio.NewScanner(os.Stdin)
+	input.Scan()
+	output := input.Text()
+	fmt.Println(output)
 }
