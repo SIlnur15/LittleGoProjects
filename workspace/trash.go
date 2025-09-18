@@ -1,30 +1,10 @@
 package main
 
-import (
-	"fmt"
-	"math"
-)
+import "fmt"
 
 func main() {
-	var evens, not_evens []int
-	var val int
-
-	for i := 0; i < 15; i++ {
-		fmt.Scan(&val)
-		if val%2 == 0 {
-			evens = append(evens, val)
-		} else {
-			not_evens = append(not_evens, val)
-		}
-	}
-	length := int(math.Max(float64(len(evens)), float64(len(not_evens))))
-
-	for i := 0; i < length; i++ {
-		if i < len(evens) {
-			fmt.Printf("%d ", evens[i])
-		}
-		if i < len(not_evens) {
-			fmt.Printf("%d ", not_evens[i])
-		}
-	}
+	slice := []int{5, 5, 5, 5, 5}
+	fmt.Println(cap(slice)) // 5
+	slice2 := []int{3, 3, 3}
+	fmt.Println(cap(slice2)) // 3
 }
