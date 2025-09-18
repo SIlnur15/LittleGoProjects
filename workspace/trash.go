@@ -3,8 +3,12 @@ package main
 import "fmt"
 
 func main() {
-	slice := []int{5, 5, 5, 5, 5}
-	fmt.Println(cap(slice)) // 5
-	slice2 := []int{3, 3, 3}
-	fmt.Println(cap(slice2)) // 3
+	var values, value int
+	mp := make(map[int]int)
+	fmt.Scan(&values)
+	for i := 0; i < values; i++ {
+		fmt.Scan(&value)
+		mp[value] += 1
+	}
+	fmt.Println(mp)
 }
