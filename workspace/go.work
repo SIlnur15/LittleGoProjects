@@ -1,6 +1,1 @@
-go 1.18
-
-use (
-	./prose
-	./prose/prose_test
-)
+go 1.25.1
