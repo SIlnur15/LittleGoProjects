@@ -1,29 +1,29 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"os"
 )
 
 func main() {
-	// Пытаемся открыть файл
-	file, err := os.Open("example.txt")
-
-	// Если возникла ошибка, выводим сообщение "Неудача..."
+	// открываем CSV файл
+	file, err := os.OpenFile("output.csv", os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Println("Неудача...")
+		fmt.Println("Ошибка создания файла:", err)
 		return
 	}
-
-	// Гарантируем закрытие файла после завершения работы
 	defer file.Close()
-
-	// Метод Close() — это функция, связанная с объектом (в данном случае с файлом),
-	// и вызывается у этого объекта через точку!
-	// Например, если переменная, содержащая файл, называется "file",
-	// мы вызываем метод как file.Close().
-	// Если бы переменная называлась "aboba", то метод вызвали бы так: aboba.Close()
-
-	// Если ошибки нет, выводим "Успех!"
-	fmt.Println("Успех!")
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+	data := [][]string{ // данные для вставки
+		{"Василий", "68", "Вена"},
+		{"Виталина", "120", "Таллин"},
+	}
+	for _, record := range data {
+		if err := writer.Write(record); err != nil {
+			fmt.Println("Ошибка записи строки:", err)
+			return
+		}
+	}
 }
