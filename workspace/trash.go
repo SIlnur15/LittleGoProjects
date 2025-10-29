@@ -1,29 +1,16 @@
 package main
 
 import (
-	"encoding/csv"
+	"encoding/json"
 	"fmt"
-	"os"
 )
 
 func main() {
-	// открываем CSV файл
-	file, err := os.OpenFile("output.csv", os.O_APPEND, 0644)
+	var myVal map[string]any
+	bte := `{"some":"json"}`
+	err := json.Unmarshal([]byte(bte), &myVal)
 	if err != nil {
-		fmt.Println("Ошибка создания файла:", err)
-		return
+		fmt.Println(err)
 	}
-	defer file.Close()
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-	data := [][]string{ // данные для вставки
-		{"Василий", "68", "Вена"},
-		{"Виталина", "120", "Таллин"},
-	}
-	for _, record := range data {
-		if err := writer.Write(record); err != nil {
-			fmt.Println("Ошибка записи строки:", err)
-			return
-		}
-	}
+	fmt.Println(myVal) // map[some:json]
 }
