@@ -3,17 +3,17 @@ package main
 import "fmt"
 
 func main() {
-	var num int
-	fmt.Scan(&num)
-	switch num {
-	case 2:
-		fmt.Println("Неудовлетворительно")
-	case 3:
-		fmt.Println("Удовлетворительно")
-	case 4:
-		fmt.Println("Хорошо")
-	case 5:
-		fmt.Println("Отлично")
+	var month int
+	fmt.Scan(&month)
+	switch month {
+	case 12, 1, 2:
+		fmt.Println("Зима")
+	case 3, 4, 5:
+		fmt.Println("Весна")
+	case 6, 7, 8:
+		fmt.Println("Лето")
+	case 9, 10, 11:
+		fmt.Print("Осень")
 	default:
 		fmt.Println("Некорректное значение!")
 	}
