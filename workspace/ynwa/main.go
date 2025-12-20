@@ -3,15 +3,6 @@ package main
 import "fmt"
 
 func main() {
-	var (
-		arr [10]int
-		sum int
-	)
-	for i := 0; i < 10; i++ {
-		fmt.Scan(&arr[i])
-	}
-	for i := 0; i < len(arr); i = i + 2 {
-		sum += arr[i]
-	}
-	fmt.Println(sum)
+	arr := []int{1, 2, 3, 4, 5}
+	fmt.Println(arr[1:3])
 }
