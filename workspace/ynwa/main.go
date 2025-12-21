@@ -3,6 +3,17 @@ package main
 import "fmt"
 
 func main() {
-	arr := []int{1, 2, 3, 4, 5}
-	fmt.Println(arr[1:3])
+	var (
+		n   int
+		inp int
+		arr []int
+	)
+	fmt.Scan(&n)
+	for i := 0; i < n; i++ {
+		fmt.Scan(&inp)
+		if inp%2 == 0 {
+			arr = append(arr, inp)
+		}
+	}
+	fmt.Println(arr)
 }
