@@ -1,11 +1,25 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
+
+func isPalindrome(input string) bool {
+	arr := []rune(input)
+	exp := make([]rune, len(input))
+	output := ""
+	for i, letter := range arr {
+		exp[len(arr)-i-1] = letter
+	}
+	for _, runedLetter := range exp {
+		output += string(runedLetter)
+	}
+	if input == output {
+		return true
+	}
+	return false
+}
 
 func main() {
-	a := func(name string) {
-		fmt.Println("hello", name)
-	}
-	a("Roma")
-	a("Sasha")
+	fmt.Println(isPalindrome("dected"))
 }
