@@ -1,25 +1,19 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func isPalindrome(input string) bool {
-	arr := []rune(input)
-	exp := make([]rune, len(input))
-	output := ""
-	for i, letter := range arr {
-		exp[len(arr)-i-1] = letter
+// Callback-функция как параметр
+func processNumbers(numbers []int, callback func(int)) {
+	for _, num := range numbers {
+		callback(num) // Вызов callback для каждого числа
 	}
-	for _, runedLetter := range exp {
-		output += string(runedLetter)
-	}
-	if input == output {
-		return true
-	}
-	return false
 }
 
 func main() {
-	fmt.Println(isPalindrome("dected"))
+	numbers := []int{1, 2, 3, 4, 5}
+
+	// Передаем анонимную функцию как callback
+	processNumbers(numbers, func(n int) {
+		fmt.Printf("Число: %d\n", n)
+	})
 }
