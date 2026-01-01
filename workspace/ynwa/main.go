@@ -1,13 +1,14 @@
 package main
 
-func main() {
-	filteredStrings := func(slc []string, callback func(string) bool) []string {
-		result := make([]string, 0)
-		for _, elem := range slc {
-			if callback(elem) {
-				ret = append(ret, elem)
-			}
-		}
-		return result
+import "fmt"
+
+func factorial(x uint) uint {
+	if x == 0 {
+		return 1
 	}
+	return x * factorial(x-1)
+}
+
+func main() {
+	fmt.Println(factorial(5)) // 120
 }
