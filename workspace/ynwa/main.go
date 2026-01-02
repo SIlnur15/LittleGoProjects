@@ -2,13 +2,13 @@ package main
 
 import "fmt"
 
-func factorial(x uint) uint {
-	if x == 0 {
-		return 1
-	}
-	return x * factorial(x-1)
+func dubleMaker(numb *int) {
+	*numb = *numb * 2
 }
 
 func main() {
-	fmt.Println(factorial(5)) // 120
+	a := 10
+	fmt.Println(a)
+	dubleMaker(&a)
+	fmt.Println(a)
 }
