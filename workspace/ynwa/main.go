@@ -2,11 +2,17 @@ package main
 
 import "fmt"
 
+func changePointer(pp **int, newValue int) {
+	*pp = &newValue      // разыменовываем pp и присваиваем ему адрес переменной newValue
+	fmt.Println(pp, *pp) // 0xc000070030 0xc000010100 - оба вывода - адреса
+}
+
 func main() {
-	a := 100
-	ptr := &a
-	ptr2 := new(int)
-	ptr2 = ptr
-	*ptr = 200
-	fmt.Println(*ptr, *ptr2)
+	x := 10
+	ptr := &x // ptr — указатель на x (т.е. хранит адрес переменной x)
+
+	y := 20
+	changePointer(&ptr, y) // в функцию передаём: адрес указателя ptr и значение 20
+
+	fmt.Println(*ptr) // 20
 }
