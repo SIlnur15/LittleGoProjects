@@ -2,12 +2,12 @@ package main
 
 import "fmt"
 
-type Contact struct {
-	name string
-	age  int
+type Person struct {
+	string
+	int
 }
 
 func main() {
-	x := Contact{"Klopp", 15}
-	fmt.Printf("%#v\n", x)
+	p1 := Person{"Alice", 30}
+	fmt.Println(p1) // {Alice 30}
 }
