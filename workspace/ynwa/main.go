@@ -1,13 +1,23 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-type Person struct {
-	string
-	int
+func getPerson(n string, a int) struct {
+	name string
+	age  int
+} {
+	return struct {
+		name string
+		age  int
+	}{
+		name: n,
+		age:  a,
+	}
 }
 
 func main() {
-	p1 := Person{"Alice", 30}
-	fmt.Println(p1) // {Alice 30}
+	person := getPerson("Miky", 15)
+	fmt.Println(person.name, person.age) // Miky 15
 }
