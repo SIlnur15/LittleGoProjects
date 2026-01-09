@@ -2,14 +2,30 @@ package main
 
 import "fmt"
 
-type MyStruct struct{}
+type Animal interface {
+	Speak() string
+}
 
-func getNilPointer() *MyStruct {
-	return nil // Возвращаем nil-указатель
+type Dog struct {
+	Name string
+}
+
+func (d Dog) Speak() string {
+	return "Woof!"
+}
+
+type Cat struct {
+	Name string
+}
+
+func (c Cat) Speak() string {
+	return "Meow!"
 }
 
 func main() {
-	var i interface{} = getNilPointer() // i теперь содержит тип *MyStruct, а значение - nil
-	fmt.Println(i == nil)               // false, потому что тип не nil!
-	fmt.Println(i)                      // <nil>
+	animals := []Animal{Dog{Name: "Fido"}, Cat{Name: "Fluffy"}}
+
+	for _, animal := range animals {
+		fmt.Println(animal.Speak())
+	}
 }
