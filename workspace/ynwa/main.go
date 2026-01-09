@@ -1,31 +1,47 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
-type Animal interface {
-	Speak() string
+type Shape interface {
+	Area() float64
+	Perimeter() float64
 }
 
-type Dog struct {
-	Name string
+type Circle struct {
+	radius float64
 }
 
-func (d Dog) Speak() string {
-	return "Woof!"
+type Rectangle struct {
+	width, height float64
 }
 
-type Cat struct {
-	Name string
+// Методы для Circle (реализует Shape)
+func (c Circle) Area() float64 {
+	return math.Pi * c.radius * c.radius
 }
 
-func (c Cat) Speak() string {
-	return "Meow!"
+func (c Circle) Perimeter() float64 {
+	return 2 * math.Pi * c.radius
+}
+
+// Методы для Rectangle (реализует Shape)
+func (r Rectangle) Area() float64 {
+	return r.width * r.height
+}
+
+func (r Rectangle) Perimeter() float64 {
+	return 2 * (r.width + r.height)
 }
 
 func main() {
-	animals := []Animal{Dog{Name: "Fido"}, Cat{Name: "Fluffy"}}
+	var shape Shape = Circle{radius: 5}
+	fmt.Printf("Circle Area: %.2f, Perimeter: %.2f\n",
+		shape.Area(), shape.Perimeter()) // 78.54, 31.42
 
-	for _, animal := range animals {
-		fmt.Println(animal.Speak())
-	}
+	shape = Rectangle{width: 3, height: 4}
+	fmt.Printf("Rectangle Area: %.2f, Perimeter: %.2f\n",
+		shape.Area(), shape.Perimeter()) // 12.00, 14.00
 }
