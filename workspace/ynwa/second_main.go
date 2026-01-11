@@ -1,15 +1,30 @@
-type Department struct {
-    Name         string
-    ListEmployees []Employee
+package main
+
+import "fmt"
+
+type Animal interface {
+	Speak() string
 }
 
-type Employee struct {
-    Name     string
-    Position string
-    Salary   float64
-    Department // анонимное встроенное поле (указатель на Department)
+type Dog struct {
+	Name string
 }
 
-func (d *Department) addEmployee(emp Employee) {
-    d.ListEmployees = append(d.ListEmployees, emp)
+func (d Dog) Speak() string {
+	return "Woof!"
+}
+
+type Cat struct {
+	Name string
+}
+
+func (c Cat) Speak() string {
+	return "Meow!"
+}
+
+func main() {
+	animals := []Animal{Dog{Name: "Fido"}, Cat{Name: "Fluffy"}}
+	for _, animal := range animals {
+		fmt.Println(animal.Speak())
+	}
 }
