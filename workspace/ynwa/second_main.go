@@ -1,30 +1,16 @@
 package main
 
-import "fmt"
-
-type Animal interface {
-	Speak() string
-}
-
-type Dog struct {
-	Name string
-}
-
-func (d Dog) Speak() string {
-	return "Woof!"
-}
-
-type Cat struct {
-	Name string
-}
-
-func (c Cat) Speak() string {
-	return "Meow!"
-}
+import (
+	"fmt"
+)
 
 func main() {
-	animals := []Animal{Dog{Name: "Fido"}, Cat{Name: "Fluffy"}}
-	for _, animal := range animals {
-		fmt.Println(animal.Speak())
+	var a interface{}
+	a = 15
+	switch a.(type) {
+	case int:
+		fmt.Println("that's int") // that's int
+	default:
+		fmt.Println("kek")
 	}
 }
