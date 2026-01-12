@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-	fmt.Println("I love go")
+	a, b := 2, 5
+	sum := add(a, b)
+	fmt.Println(sum)
 }
