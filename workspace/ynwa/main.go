@@ -5,13 +5,24 @@ import (
 	"fmt"
 )
 
+type MyError struct {
+	Msg  string
+	Code int
+}
+
+func (e *MyError) Error() string {
+	return fmt.Sprintf("%s (код: %d)", e.Msg, e.Code)
+}
+
 func main() {
-	var a int
-	fmt.Scan(&a)
-	if a == 5 {
-		b := errors.New("nothing was entered")
-		fmt.Println(b)
-	} else {
-		fmt.Println(a)
+	err := doSomething()
+
+	var myErr *MyError
+	if errors.As(err, &myErr) {
+		fmt.Printf("Ошибка: %v, код: %d\n", myErr.Msg, myErr.Code)
 	}
+}
+
+func doSomething() error {
+	return &MyError{Msg: "ошибка сервера", Code: 500}
 }
