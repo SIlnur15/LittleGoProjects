@@ -1,28 +1,24 @@
 package main
 
-import (
-	"errors"
-	"fmt"
-)
+import "fmt"
 
-type MyError struct {
-	Msg  string
-	Code int
+// Функция, которая может вызвать панику
+func riskyFunction() {
+	panic("что-то пошло не так!")
 }
 
-func (e *MyError) Error() string {
-	return fmt.Sprintf("%s (код: %d)", e.Msg, e.Code)
-}
-
-func main() {
-	err := doSomething()
-
-	var myErr *MyError
-	if errors.As(err, &myErr) {
-		fmt.Printf("Ошибка: %v, код: %d\n", myErr.Msg, myErr.Code)
+// Функция для восстановления после паники
+func handlePanic() {
+	if r := recover(); r != nil {
+		fmt.Println("Паника перехвачена:", r)
 	}
 }
 
-func doSomething() error {
-	return &MyError{Msg: "ошибка сервера", Code: 500}
+func main() {
+	// Откладываем вызов обработчика до завершения main
+	defer handlePanic()
+
+	fmt.Println("Начало работы")
+	riskyFunction() // вызывает panic
+	fmt.Println("Эта строка не будет напечатана")
 }
