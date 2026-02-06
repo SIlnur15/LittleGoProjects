@@ -1,24 +1,24 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-// Функция, которая может вызвать панику
-func riskyFunction() {
-	panic("что-то пошло не так!")
-}
-
-// Функция для восстановления после паники
-func handlePanic() {
-	if r := recover(); r != nil {
-		fmt.Println("Паника перехвачена:", r)
+func getValue(arr []int, idx int) (int, error) {
+	if idx >= len(arr) || idx < 0 {
+		return 0, errors.New("list index out of range")
+	} else {
+		return arr[idx], nil
 	}
 }
 
 func main() {
-	// Откладываем вызов обработчика до завершения main
-	defer handlePanic()
+	var (
+		idx int
+	)
+	arr := []int{5, 15, 25}
+	fmt.Scan(&idx)
+	fmt.Println(getValue(arr, idx))
 
-	fmt.Println("Начало работы")
-	riskyFunction() // вызывает panic
-	fmt.Println("Эта строка не будет напечатана")
 }
