@@ -1,24 +1,20 @@
 package main
 
-import (
-	"errors"
-	"fmt"
-)
+import "fmt"
 
-func getValue(arr []int, idx int) (int, error) {
-	if idx >= len(arr) || idx < 0 {
-		return 0, errors.New("list index out of range")
-	} else {
-		return arr[idx], nil
-	}
+type myPerson struct {
+	name string
+	age  int
 }
 
 func main() {
-	var (
-		idx int
-	)
-	arr := []int{5, 15, 25}
-	fmt.Scan(&idx)
-	fmt.Println(getValue(arr, idx))
-
+	h := &myPerson{"Haid", 95}
+	s := myPerson{"Said", 87}
+	addrS := &s
+	fmt.Println(h, s)
+	fmt.Println(&h, &addrS)
+	h.name = "Haidaric"
+	s.name = "Saidaric"
+	fmt.Println(h.name, s.name)
+	fmt.Println(&h, *addrS)
 }
