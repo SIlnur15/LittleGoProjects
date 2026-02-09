@@ -1,13 +1,22 @@
 package main
 
-import (
-	"fmt"
-	"unsafe"
-)
+import "fmt"
+
+type account struct {
+	balance float32
+}
 
 func main() {
-	var i interface{}
-	fmt.Println(unsafe.Sizeof(i))
-	var j struct{}
-	fmt.Println(unsafe.Sizeof(j))
+	accounts := []account{
+		{balance: 100},
+		{balance: 200},
+		{balance: 300},
+	}
+	for _, a := range accounts {
+		a.balance += 1000
+	}
+	for idx, _ := range accounts {
+		accounts[idx].balance += 1000
+	}
+	fmt.Println(accounts)
 }
