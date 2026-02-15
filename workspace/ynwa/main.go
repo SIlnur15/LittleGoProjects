@@ -6,19 +6,10 @@ import (
 )
 
 func main() {
-	entries, err := os.ReadDir(".")
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("Ошибка при получении домашней директории:", err)
 		return
 	}
-
-	for _, entry := range entries {
-		info, _ := entry.Info() // Получаем os.FileInfo (если нужно)
-		fmt.Printf(
-			"Name: %-10s | IsDir: %-5t | Size: %d\n",
-			entry.Name(),
-			entry.IsDir(),
-			info.Size(),
-		)
-	}
+	fmt.Println("Домашняя директория пользователя:", homeDir)
 }
