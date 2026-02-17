@@ -7,10 +7,15 @@ import (
 )
 
 func main() {
-	file, _ := os.Open("test.txt")
-	reader := bufio.NewReader(file)
+	// Создаем новый сканер из стандартного ввода
+	scanner := bufio.NewScanner(os.Stdin)
 
-	bytes, _ := reader.Peek(5)
+	// Устанавливаем разделитель
+	scanner.Split(bufio.ScanWords)
 
-	fmt.Printf("%s\n", bytes) // выведет первые 5 байт файла
+	// Читаем слова из ввода и выводим их на экран
+	for scanner.Scan() {
+		word := scanner.Text()
+		fmt.Println(word)
+	}
 }
