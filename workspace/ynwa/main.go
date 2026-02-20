@@ -1,11 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"time"
 )
 
+type Person struct {
+	Name string `json:"sweetName"`
+	Age  int    `json:"littleAge"`
+}
+
 func main() {
-	d := 5*time.Minute + 10*time.Hour // 10 hours 5 минут
-	fmt.Println(d)                    // 10h5m0s
+	p := Person{Name: "Haidaric", Age: 75}
+	per, err := json.Marshal(p)
+	if err != nil {
+		fmt.Println("there is a trouble")
+		return
+	}
+	fmt.Printf("%s\n", per) // {"name":"Haidaric","age":75}
 }
