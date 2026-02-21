@@ -5,17 +5,17 @@ import (
 	"fmt"
 )
 
-type Person struct {
-	Name string `json:"sweetName"`
-	Age  int    `json:"littleAge"`
+type MyStruct struct {
+	Name string `json:"first_name"`
 }
 
 func main() {
-	p := Person{Name: "Haidaric", Age: 75}
-	per, err := json.Marshal(p)
+	jsonData := []byte(`{"Name":"John","first_name":"Fred"}`)
+	var myStruct MyStruct
+	err := json.Unmarshal([]byte(jsonData), &myStruct)
 	if err != nil {
-		fmt.Println("there is a trouble")
+		fmt.Println(err)
 		return
 	}
-	fmt.Printf("%s\n", per) // {"name":"Haidaric","age":75}
+	fmt.Println(myStruct.Name)
 }
