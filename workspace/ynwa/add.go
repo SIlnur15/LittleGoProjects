@@ -1,27 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"os"
-	"regexp"
-	"strconv"
 )
 
+type MyStruct struct {
+	Name string `json:"first_name"`
+}
+
 func main() {
-	content, err := os.ReadFile("stepik_io_1.text")
+	jsonData := []byte(`{"Name":"John","first_name":"Fred"}`)
+	var myStruct MyStruct
+	err := json.Unmarshal([]byte(jsonData), &myStruct)
 	if err != nil {
-		fmt.Errorf("there is a problem")
+		fmt.Println(err)
 		return
 	}
-	input := string(content)
-	fmt.Println(input)
-	re := regexp.MustCompile(`\+?\d+`)
-	matches := re.FindAllString(input, -1)
-
-	sum := 0
-	for _, match := range matches {
-		num, _ := strconv.Atoi(match)
-		sum += num
-	}
-	fmt.Println(sum)
+	fmt.Println(myStruct.Name)
 }
