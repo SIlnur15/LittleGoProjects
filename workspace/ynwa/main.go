@@ -1,21 +1,23 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"time"
+	"os"
 )
 
 func main() {
-	// Создаем объект времени
-	t := time.Date(2023, time.October, 17, 10, 0, 0, 0, time.UTC)
+	var output map[string]interface{}
 
-	// Маршалинг в JSON
-	jsonBytes, err := t.MarshalJSON()
+	file, err := os.Open("stepik4-4.json")
 	if err != nil {
-		fmt.Println("Ошибка:", err)
-		return
+		fmt.Println("trouble")
 	}
+	defer file.Close()
 
-	// Вывод результата
-	fmt.Printf("JSON-представление: %s\n", string(jsonBytes))
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&output)
+	if _, ok := output["people"].([]interface{}); ok {
+		fmt.Println("kuku")
+	}
 }
