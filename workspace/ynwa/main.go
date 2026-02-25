@@ -17,7 +17,13 @@ func main() {
 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&output)
-	if _, ok := output["people"].([]interface{}); ok {
-		fmt.Println("kuku")
+	if people, ok := output["people"].([]interface{}); ok {
+		for _, person := range people {
+			if gender, ok := person.(map[string]interface{}); ok {
+				if gender["gender"] == "Female" {
+					fmt.Printf("%s %s\n", gender["first_name"], gender["last_name"])
+				}
+			}
+		}
 	}
 }
