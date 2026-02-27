@@ -27,18 +27,16 @@ func main() {
 	if students, ok := output["students"].([]interface{}); ok {
 		for _, student := range students {
 			if studentStudent, ok := student.(map[string]interface{}); ok {
-				if person, ok := studentStudent["Rating"].(interface{}); ok {
-					if arr, ok := person.([]interface{}); ok {
-						for _, elem := range arr {
-							if elemElem, ok := elem.(float64); ok {
-								summa += elemElem
-							}
-							lenArr += 1
+				if person, ok := studentStudent["Rating"].([]interface{}); ok {
+					for _, elem := range person {
+						if elemElem, ok := elem.(float64); ok {
+							summa += elemElem
 						}
+						lenArr += 1
 					}
 				}
 			}
 		}
-		fmt.Printf("%.2f\n", summa/lenArr)
 	}
+	fmt.Printf("%.2f\n", summa/lenArr)
 }
