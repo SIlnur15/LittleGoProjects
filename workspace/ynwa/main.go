@@ -1,9 +1,22 @@
 package main
 
-import "net/http"
+import (
+	"bytes"
+	"fmt"
+	"net/http"
+)
 
-type ResponseWriter interface {
-	Header() http.Header
-	Write([]byte) (int, error)
-	WriteHeader(statusCode int)
+func main() {
+	// создаем объект запроса со значением body
+	requestBody := []byte(`{"foo": "bar"}`)
+
+	req, err := http.NewRequest(
+		"POST",
+		"https://jsonplaceholder.typicode.com/posts",
+		bytes.NewBuffer(requestBody),
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
