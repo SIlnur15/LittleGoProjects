@@ -1,22 +1,25 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 )
 
-func main() {
-	// создаем объект запроса со значением body
-	requestBody := []byte(`{"foo": "bar"}`)
+func handler(w http.ResponseWriter, r *http.Request) {
+	// Получаем все query parameters как map
+	queryParams := r.URL.Query()
 
-	req, err := http.NewRequest(
-		"POST",
-		"https://jsonplaceholder.typicode.com/posts",
-		bytes.NewBuffer(requestBody),
-	)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// Получаем конкретный параметр
+	name := queryParams.Get("name")
+	age := queryParams.Get("age")
+
+	// Если параметр может встречаться несколько раз
+	ids := queryParams["id"] // возвращает []string
+
+	fmt.Fprintf(w, "Name: %s, Age: %s, IDs: %v", name, age, ids)
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+	http.ListenAndServe(":8080", nil)
 }
