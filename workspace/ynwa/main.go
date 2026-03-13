@@ -5,17 +5,14 @@ import (
 	"net/http"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, world!")
-}
+type myHandler struct{}
 
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "This is the about page.")
+func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello, world!"))
 }
 
 func main() {
-	http.HandleFunc("/", helloHandler)
-	http.HandleFunc("/about", aboutHandler)
+	http.Handle("/", &myHandler{})
 	err := http.ListenAndServe("localhost:8080", nil)
 	if err != nil {
 		fmt.Println("ListenAndServe: ", err)
