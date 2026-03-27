@@ -1,25 +1,20 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
+type MyPerson struct {
+	Name string `json:"myName`
+	Age  int    `json:"myAge"`
+}
+
 func main() {
-	// 1. Создаем свой собственный экземпляр роутера (мультиплексора)
-	mux := http.NewServeMux()
-
-	// 2. Регистрируем маршруты именно в нашем локальном mux
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Главная страница")
-	})
-
-	mux.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "О нас")
-	})
-
-	// 3. Передаем наш mux вторым аргументом.
-	// Теперь ListenAndServe не использует глобальный DefaultServeMux.
-	fmt.Println("Сервер запущен на :8080")
-	http.ListenAndServe(":8080", mux)
+	p := MyPerson{"Haidaric", 75}
+	jsonProd, err := json.Marshal(p)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%s\n", jsonProd)
 }
