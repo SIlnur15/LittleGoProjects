@@ -1,20 +1,32 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
 )
 
-type MyPerson struct {
-	Name string `json:"myName`
-	Age  int    `json:"myAge"`
-}
-
 func main() {
-	p := MyPerson{"Haidaric", 75}
-	jsonProd, err := json.Marshal(p)
+	cli := &http.Client{
+		Timeout: time.Second * 5, // Wait no more than 5 seconds for an answer
+	}
+	req, err := http.NewRequest(
+		"GET",
+		"https://api.chucknorris.io/jokes/rBOPF3bYRN6S6P2Y2ZCCWw",
+		nil,
+	)
+
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%s\n", jsonProd)
+
+	req.Header.Set("User-Agent", "Golang-Client") // to bypass (обход) bot protection
+
+	resp, err := cli.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
+
+	fmt.Println(resp.StatusCode)
 }

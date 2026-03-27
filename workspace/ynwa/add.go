@@ -1,42 +1,28 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
+	"io"
+	"net/http"
+	"time"
 )
 
 func main() {
-	var (
-		output map[string]interface{}
-		summa  float64
-		lenArr float64
-	)
+	client := &http.Client{
+		Timeout: time.Second * 5, // Wait no more than 5 seconds for an answer
 
-	file, err := os.Open("stepik4-4-2.json")
-	if err != nil {
-		fmt.Println(err)
 	}
-	defer file.Close()
 
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&output)
+	resp, err := client.Get("https://api.chucknorris.io/jokes/random")
 	if err != nil {
-		fmt.Println("2. trouble")
+		panic(err)
 	}
-	if students, ok := output["students"].([]interface{}); ok {
-		for _, student := range students {
-			if studentStudent, ok := student.(map[string]interface{}); ok {
-				if person, ok := studentStudent["Rating"].([]interface{}); ok {
-					for _, elem := range person {
-						if elemElem, ok := elem.(float64); ok {
-							summa += elemElem
-						}
-						lenArr += 1
-					}
-				}
-			}
-		}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
 	}
-	fmt.Printf("%.2f\n", summa/lenArr)
+
+	fmt.Println(string(body))
 }
