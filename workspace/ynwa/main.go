@@ -3,30 +3,32 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 )
 
+func helloEnHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello, world!"))
+}
+
+func helloRuHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Привет, мир!"))
+}
+
+func helloEsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hola, Mundo!"))
+}
+
+func helloJpHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("「こんにちは世界」"))
+}
+
 func main() {
-	cli := &http.Client{
-		Timeout: time.Second * 5, // Wait no more than 5 seconds for an answer
-	}
-	req, err := http.NewRequest(
-		"GET",
-		"https://api.chucknorris.io/jokes/rBOPF3bYRN6S6P2Y2ZCCWw",
-		nil,
-	)
-
+	http.HandleFunc("/en", helloEnHandler)
+	http.HandleFunc("/ru", helloRuHandler)
+	http.HandleFunc("/es", helloEsHandler)
+	http.HandleFunc("/jp", helloJpHandler)
+	err := http.ListenAndServe("localhost:8080", nil)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ListenAndServe: ", err)
+		return
 	}
-
-	req.Header.Set("User-Agent", "Golang-Client") // to bypass (обход) bot protection
-
-	resp, err := cli.Do(req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer resp.Body.Close()
-
-	fmt.Println(resp.StatusCode)
 }
