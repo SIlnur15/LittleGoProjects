@@ -1,11 +1,12 @@
 package main
 
-import "net/http"
+import "time"
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello world"))
-	})
-	http.ListenAndServe("localhost:8080", mux)
+	type Context interface {
+		Deadline() (deadline time.Time, ok bool)
+		Done() <-chan struct{}
+		Err() error
+		Value(key any) any
+	}
 }
