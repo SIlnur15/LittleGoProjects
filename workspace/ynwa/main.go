@@ -1,31 +1,32 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
-	"net/http"
+	"time"
 )
 
-func main() {
-	resp, err := http.Get("http://api.zippopotam.us/us/90210")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer resp.Body.Close()
-
-	var cont map[string]interface{}
-
-	dec := json.NewDecoder(resp.Body)
-	err = dec.Decode(&cont)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	if places, ok := cont["places"].([]interface{}); ok {
-		if sample, ok := places[0].(map[string]interface{}); ok {
-			fmt.Println(sample["place name"]) // Beverly Hills
+func doWork(ctx context.Context) error {
+	// Имитация работы, которая может быть прервана по таймауту
+	for i := 0; i < 5; i++ {
+		// Проверяем, не истёк ли таймаут или не отменён ли контекст
+		if ctx.Err() != nil {
+			return ctx.Err() // возвращаем ошибку контекста (таймаут или отмена)
 		}
+		fmt.Println("Работаем...", i)
+		time.Sleep(1 * time.Second)
+	}
+	return nil
+}
+
+func main() {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := doWork(ctx)
+	if err != nil {
+		fmt.Println("Операция прервана:", err)
+	} else {
+		fmt.Println("Операция завершена успешно")
 	}
 }
