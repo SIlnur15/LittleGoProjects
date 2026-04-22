@@ -6,18 +6,32 @@ import (
 	"time"
 )
 
+func worker(ctx context.Context, id int) {
+	fmt.Printf("Горутина %d: запущена\n", id)
+
+	for i := 0; ; i++ {
+		select {
+		case <-ctx.Done():
+			fmt.Printf("Горутина %d: отмена! Причина: %v\n", id, ctx.Err())
+			// Здесь можно добавить очистку ресурсов
+			return
+		default:
+			fmt.Printf("Горутина %d: итерация %d\n", id, i)
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
+
 func main() {
-	// Создаём контекст с дедлайном через 5 секунд
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	// Получаем дедлайн и флаг
-	deadline, ok := ctx.Deadline()
-
-	if ok {
-		fmt.Printf("Дедлайн установлен: %v\n", deadline)
-		fmt.Printf("Осталось времени: %v\n", time.Until(deadline))
-	} else {
-		fmt.Println("Дедлайн не установлен")
+	// Запускаем несколько горутин
+	for i := 1; i <= 2; i++ {
+		go worker(ctx, i)
 	}
+
+	// Ждём завершения всех горутин
+	time.Sleep(5 * time.Second)
+	fmt.Println("Основная программа завершена")
 }
