@@ -1,34 +1,17 @@
 package main
 
-import (
-	"fmt"
-	"log"
-	"net/http"
-)
+import "fmt"
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	// Извлекаем все query-параметры
-	queryParams := r.URL.Query()
+type myType struct {
+	name string
+	age  int
+}
 
-	// Выводим всю карту параметров
-	fmt.Fprintf(w, "Все параметры: %v\n\n", queryParams)
-
-	// Получаем отдельные значения
-	q := queryParams.Get("q")
-	page := queryParams.Get("page")
-	sort := queryParams.Get("sort")
-
-	fmt.Fprintf(w, "q = %s\n", q)
-	fmt.Fprintf(w, "page = %s\n", page)
-	fmt.Fprintf(w, "sort = %s\n", sort)
-
-	// Обрабатываем параметр с несколькими значениями
-	tags := queryParams["tags"]
-	fmt.Fprintf(w, "tags = %v\n", tags)
+func (m myType) get() {
+	fmt.Printf("hello, I'm %s\n", m.name)
 }
 
 func main() {
-	http.HandleFunc("/search", handler)
-	log.Println("Сервер запущен на :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	a := myType{name: "Axel", age: 25}
+	a.get()
 }
