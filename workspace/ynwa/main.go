@@ -1,11 +1,10 @@
 package main
 
-import "fmt"
+import "time"
 
-func noni(n int) {
-	fmt.Println(15 * n)
-}
-
-func main() {
-	noni(5)
+type Client struct {
+	Transport     RoundTripper
+	CheckRedirect func(req *Request, via []*Request) error
+	Jar           CookieJar
+	Timeout       time.Duration
 }
