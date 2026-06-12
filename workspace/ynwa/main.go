@@ -5,42 +5,55 @@ import (
 	"fmt"
 	"log"
 	"myproject/userpb"
-	"time"
+	"net"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	// Подключаем сгенерированный из proto-файла код
+	// Подключаем тот же сгенерированный код, что и на клиенте
 )
 
+// 1. Создаем структуру нашего сервера.
+// Она ОБЯЗАТЕЛЬНО должна включать в себя UnimplementedUserServiceServer.
+// Это нужно для обратной совместимости, если в будущем контракт (.proto) изменится.
+type MyUserServer struct {
+	userpb.UnimplementedUserServiceServer
+}
+
+// 2. Реализуем метод GetUser, который мы описали в .proto файле.
+// Именно эту функцию клиент вызывает через свою заглушку (Stub).
+func (s *MyUserServer) GetUser(ctx context.Context, req *userpb.UserRequest) (*userpb.UserResponse, error) {
+	// Логируем входящий запрос. req.UserId уже автоматически распакован из байтов!
+	fmt.Printf("Сервер: Получен запрос для User ID: %d\n", req.UserId)
+
+	// Имитируем поиск в базе данных.
+	// В реальном проекте здесь был бы SQL-запрос вроде: SELECT name, email FROM users WHERE id = ...
+	if req.UserId == 42 {
+		return &userpb.UserResponse{
+			Name:  "Алексей Гофер",
+			Email: "alex@golang.org",
+		}, nil
+	}
+
+	// Если пользователь не найден, возвращаем пустой ответ или ошибку gRPC
+	return &userpb.UserResponse{Name: "Неизвестный пользователь"}, nil
+}
+
 func main() {
-	conn, err := grpc.NewClient("192.168.1.50:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// 3. Открываем TCP-порт для прослушивания входящих соединений
+	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatalf("Не удалось подключиться: %v", err)
-	}
-	defer conn.Close()
-
-	// 1. Устанавливаем сетевое соединение с удаленным сервером
-
-	// 2. Создаем заглушку (Stub).
-	// Функция NewUserServiceClient — это сгенерированный фреймворком код.
-	// Переменная client теперь содержит тот самый Stub.
-	client := userpb.NewUserServiceClient(conn)
-
-	// 3. Создаем контекст для контроля таймаута
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	// ==========================================
-	// 4. ВОТ ОН — ВЫЗОВ МЕТОДА-ЗАГЛУШКИ (Stub):
-	// ==========================================
-	resp, err := client.GetUser(ctx, &userpb.UserRequest{UserId: 42})
-	// Для твоего кода это выглядит как обычный локальный метод структуры client.
-	// Но внутри этого метода фреймворк прямо сейчас превратил ID 42 в байты,
-	// отправил их по сети на IP 192.168.1.50, дождался ответа и вернул структуру resp!
-	if err != nil {
-		log.Fatalf("Ошибка при вызове удаленного метода: %v", err)
+		log.Fatalf("Не удалось открыть порт: %v", err)
 	}
 
-	// Выводим результат так, будто функция выполнилась прямо здесь
-	fmt.Printf("Пользователь найден! Имя: %s, Email: %s\n", resp.Name, resp.Email)
+	// 4. Создаем экземпляр gRPC-сервера
+	grpcServer := grpc.NewServer()
+
+	// 5. Регистрируем наш сервер MyUserServer внутри gRPC-фреймворка
+	userpb.RegisterUserServiceServer(grpcServer, &MyUserServer{})
+
+	fmt.Println("gRPC сервер успешно запущен на порту :50051...")
+
+	// 6. Запускаем бесконечный цикл обработки запросов
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("Ошибка при работе сервера: %v", err)
+	}
 }
