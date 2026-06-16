@@ -8,7 +8,6 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
-	// Подключаем тот же сгенерированный код, что и на клиенте
 )
 
 // 1. Создаем структуру нашего сервера.
@@ -17,6 +16,8 @@ import (
 type MyUserServer struct {
 	userpb.UnimplementedUserServiceServer
 }
+
+func (cc *ClientConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...CallOption) error
 
 // 2. Реализуем метод GetUser, который мы описали в .proto файле.
 // Именно эту функцию клиент вызывает через свою заглушку (Stub).
