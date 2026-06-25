@@ -1,24 +1,26 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"os"
+	"bytes"
+	"log"
+	"os/exec"
 )
 
 func main() {
-	// Определение флагов
-	verbose := flag.Bool("v", false, "verbose output")
-	port := flag.Int("port", 8080, "server port")
+	cmd := exec.Command("grep", "go")
 
-	// Парсинг флагов
-	flag.Parse()
+	var stdin bytes.Buffer // Создаем и записываем данные в STDIN команды
+	cmd.Stdin = &stdin
+	stdin.Write([]byte("golang\npython\njava\n"))
 
-	// Аргументы командной строки (не флаги)
-	args := flag.Args()
+	var stdout, stderr bytes.Buffer // Буферы для STDOUT и STDERR
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 
-	fmt.Printf("Verbose: %v\n", *verbose)
-	fmt.Printf("Port: %d\n", *port)
-	fmt.Printf("Arguments: %v\n", args)
-	fmt.Printf("All command line args (including flags): %v\n", os.Args)
+	err := cmd.Run() // Запускаем команду
+	if err != nil {
+		log.Fatalf("Ошибка выполнения: %s\nStderr: %s", err, stderr.String())
+	}
+
+	log.Printf("Stdout: %s", stdout.String())
 }
