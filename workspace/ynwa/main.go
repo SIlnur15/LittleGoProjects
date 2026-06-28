@@ -2,9 +2,15 @@ package main
 
 import (
 	"fmt"
-	"runtime"
+	"time"
 )
 
+func sayHello(name string) {
+	fmt.Printf("Hello %s\n", name)
+}
+
 func main() {
-	fmt.Println(runtime.NumCPU())
+	go sayHello("Haidaric")
+	fmt.Println("hello hello")
+	time.Sleep(1 * time.Second)
 }
