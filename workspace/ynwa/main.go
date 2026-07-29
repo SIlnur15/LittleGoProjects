@@ -5,15 +5,11 @@ import (
 	"time"
 )
 
+func sayHello() {
+	fmt.Println("hello")
+}
+
 func main() {
-	var x, y int
-	go func() {
-		x = 1
-		fmt.Print("у:", y, " ")
-	}()
-	go func() {
-		y = 1
-		fmt.Print("х:", x, " ")
-	}()
-	time.Sleep(1)
+	go sayHello()
+	time.Sleep(1 * time.Millisecond)
 }
