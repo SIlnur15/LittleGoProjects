@@ -5,11 +5,10 @@ import (
 	"time"
 )
 
-func sayHello() {
-	fmt.Println("hello")
-}
-
 func main() {
-	go sayHello()
-	time.Sleep(1 * time.Millisecond)
+	go func() {
+		fmt.Println("hello GOOOOOOOO") // anonymus goroutine
+	}()
+	fmt.Println("hello Go")
+	time.Sleep(time.Millisecond)
 }
