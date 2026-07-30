@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"sync"
 )
 
 func main() {
-	go func() {
-		fmt.Println("hello GOOOOOOOO") // anonymus goroutine
-	}()
-	fmt.Println("hello Go")
-	time.Sleep(time.Millisecond)
+	var wg sync.WaitGroup
+	for i := 0; i <= 15; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			fmt.Printf("%dth goroutineis printed\n", i)
+		}()
+	}
+	wg.Wait()
+	fmt.Println("all goroutines are printed")
 }
