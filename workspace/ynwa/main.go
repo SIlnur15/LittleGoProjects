@@ -2,18 +2,17 @@ package main
 
 import (
 	"fmt"
-	"sync"
 )
 
+func change(x int) int {
+	x = 22
+	return x
+}
+
 func main() {
-	var wg sync.WaitGroup
-	for i := 0; i <= 15; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			fmt.Printf("%dth goroutineis printed\n", i)
-		}()
-	}
-	wg.Wait()
-	fmt.Println("all goroutines are printed")
+	x := 5
+	fmt.Println(x)
+	a := change(x)
+	fmt.Println(a)
+	fmt.Println(x)
 }
