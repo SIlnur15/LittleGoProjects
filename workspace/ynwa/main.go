@@ -2,39 +2,16 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
-func doWork(done chan struct{}) {
-	for {
-		select {
-		case <-done: // Если канал закрыли, этот кейс мгновенно сработает!
-			fmt.Println("Горутина: Получен сигнал отмены! Сворачиваю удочки...")
-			return // Мгновенно завершаем работу горутины
-		default:
-			// Имитация полезной работы
-			fmt.Println("Горутина: Выполняю сложную задачу...")
-			time.Sleep(500 * time.Millisecond)
-		}
-	}
+func sayHello(ch chan string) {
+	ch <- "Hello to chanel!"
 }
 
 func main() {
-	// Создаем сигнальный канал отмены
-	done := make(chan struct{})
+	ch := make(chan string) // инициализируем канал через make
 
-	// Запускаем долгую операцию в фоне
-	go doWork(done)
-
-	// Имитируем, что пользователь подождал 1.5 секунды и нажал кнопку "Отмена"
-	time.Sleep(1500 * time.Millisecond)
-	fmt.Println("Главный поток: Пользователь нажал 'Отмена'!")
-
-	// Главная магия: закрываем канал.
-	// Это действие мгновенно отправляет сигнал ВСЕМ, кто слушает этот канал
-	close(done)
-
-	// Даем горутине время красиво завершиться
-	time.Sleep(100 * time.Millisecond)
-	fmt.Println("Главный поток: Программа завершена.")
+	go sayHello(ch)   // Запуск горутины, которая отправит сообщение
+	fmt.Println(<-ch) // Получение и вывод сообщения из канала
+	fmt.Println("the main stream is over!")
 }
