@@ -1,17 +1,15 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func sayHello(ch chan string) {
-	ch <- "Hello to chanel!"
+func routiner(cch chan int) {
+	cch <- 15
+	cch <- 25
 }
 
 func main() {
-	ch := make(chan string) // инициализируем канал через make
-
-	go sayHello(ch)   // Запуск горутины, которая отправит сообщение
-	fmt.Println(<-ch) // Получение и вывод сообщения из канала
-	fmt.Println("the main stream is over!")
+	channel := make(chan int)
+	go routiner(channel)
+	fmt.Println(<-channel)
+	fmt.Println(<-channel)
 }
