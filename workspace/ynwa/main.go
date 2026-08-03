@@ -2,35 +2,23 @@ package main
 
 import (
 	"fmt"
-	"sync"
+	"time"
 )
 
 func main() {
-	oneWriterManyReaders()
+	synchronization()
 }
 
-func oneWriterManyReaders() {
-	var wg sync.WaitGroup
-	ch := make(chan int)
-	const readers = 3
+func synchronization() {
+	ch := make(chan struct{}) // Канал для синхронизации
 
-	wg.Add(1)
-	go func() { // Единственный писатель
-		defer wg.Done()
-		for i := 0; i < readers; i++ {
-			ch <- i
-		}
-		close(ch)
+	go func() {
+		fmt.Println("Горутина начинает работу")
+		time.Sleep(time.Second)
+		fmt.Println("Горутина завершила работу")
+		ch <- struct{}{} // Сигнал о завершении
 	}()
 
-	for i := 0; i < readers; i++ { // Множество читателей
-		wg.Add(1)
-		go func(id int) {
-			defer wg.Done()
-			for val := range ch {
-				fmt.Printf("Reader %d got %d\n", id, val)
-			}
-		}(i)
-	}
-	wg.Wait()
+	<-ch // Ожидание завершения
+	fmt.Println("Основная горутина продолжает работу")
 }
