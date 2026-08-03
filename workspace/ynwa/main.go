@@ -6,29 +6,31 @@ import (
 )
 
 func main() {
-	manyWritersOneReader()
+	oneWriterManyReaders()
 }
 
-func manyWritersOneReader() {
-	ch := make(chan int)
+func oneWriterManyReaders() {
 	var wg sync.WaitGroup
+	ch := make(chan int)
+	const readers = 3
 
-	for i := 0; i < 5; i++ {
-		wg.Add(1)
-		go func(id int) {
-			defer wg.Done()
-			ch <- id
-		}(i)
-	}
-
-	// Отдельная горутина для ожидания и закрытия канала
-	go func() {
-		wg.Wait()
+	wg.Add(1)
+	go func() { // Единственный писатель
+		defer wg.Done()
+		for i := 0; i < readers; i++ {
+			ch <- i
+		}
 		close(ch)
 	}()
 
-	// Читатель успешно завершит цикл, когда канал закроется
-	for id := range ch {
-		fmt.Println("Получен ID:", id)
+	for i := 0; i < readers; i++ { // Множество читателей
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			for val := range ch {
+				fmt.Printf("Reader %d got %d\n", id, val)
+			}
+		}(i)
 	}
+	wg.Wait()
 }
