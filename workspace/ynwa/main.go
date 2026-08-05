@@ -2,32 +2,38 @@ package main
 
 import (
 	"fmt"
-	"sync"
 	"time"
 )
 
 func main() {
-	var wg sync.WaitGroup
-	taskChannel := make(chan string) // Создаем небуферизированный канал для передачи задач
+	ch1 := make(chan int)
+	ch2 := make(chan int)
 
-	wg.Add(1)
-	go func() { // Горутина-исполнитель
-		defer wg.Done()
-		for task := range taskChannel {
-			// Получение задачи (блокируется, пока не будет отправки)
-			fmt.Printf("start of processing: %s\n", task)
-			time.Sleep(1 * time.Second) // Имитация работы
-			fmt.Printf("is over: %s\n", task)
+	go func() { // Горутина 1: пытается отправить в ch1, потом прочитать из ch2
+		for {
+			select {
+			case ch1 <- 1:
+				fmt.Println("Горутина 1 отправила в ch1")
+			case <-ch2:
+				fmt.Println("Горутина 1 получила из ch2")
+			}
+			time.Sleep(100 * time.Millisecond)
 		}
 	}()
 
-	tasks := []string{"task 1", "task 2", "task 3"}
-	for _, task := range tasks { // Отправляем 3 задачи последовательно
-		fmt.Printf("sending %s...\n", task)
-		taskChannel <- task
-		fmt.Printf("was sent: %s\n", task)
-	}
+	go func() { // Горутина 2: пытается отправить в ch2, потом прочитать из ch1
+		for {
+			select {
+			case ch2 <- 2:
+				fmt.Println("Горутина 2 отправила в ch2")
+			case <-ch1:
+				fmt.Println("Горутина 2 получила из ch1")
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+	}()
 
-	close(taskChannel) // Закрываем канал после отправки всех задач
-	wg.Wait()
+	// Даем livelock'у поработать
+	time.Sleep(time.Second)
+	fmt.Println("Livelock продолжается...")
 }
