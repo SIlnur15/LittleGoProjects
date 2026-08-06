@@ -2,55 +2,27 @@ package main
 
 import (
 	"fmt"
-	"strings"
-	"sync"
+	"time"
 )
 
 func main() {
-	var wg sync.WaitGroup
+	ch1 := make(chan string)
+	ch2 := make(chan string)
 
-	input := make(chan string)
-	output1 := make(chan string)
-	output2 := make(chan string)
-
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
-		for s := range input {
-			words := strings.Split(s, " ")
-			for i, w := range words {
-				words[i] = strings.ToUpper(w)
-			}
-			output1 <- strings.Join(words, " ")
-		}
-		close(output1)
+		time.Sleep(1 * time.Second)
+		ch1 <- "one"
 	}()
 
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
-		for s := range output1 {
-			vowels := "AEIOUaeiou"
-			for _, v := range vowels {
-				s = strings.Replace(s, string(v), "*", -1)
-			}
-			output2 <- s
-		}
-		close(output2)
+		time.Sleep(2 * time.Second)
+		ch2 <- "two"
 	}()
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for s := range output2 {
-			fmt.Println(s)
-		}
-	}()
-
-	input <- "Hello world"
-	input <- "Go is awesome"
-	input <- "Concurrency is the future"
-	close(input)
-
-	wg.Wait()
+	select {
+	case msg1 := <-ch1:
+		fmt.Println(msg1)
+	case msg2 := <-ch2:
+		fmt.Println(msg2)
+	}
 }
