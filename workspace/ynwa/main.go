@@ -2,31 +2,55 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"strings"
+	"sync"
 )
 
-// producer принимает канал только для записи (chan<-)
-func producer(ch chan<- int) {
-	for i := 0; i < 5; i++ {
-		ch <- i // отправляем значения в канал
-		fmt.Printf("Отправлено: %d\n", i)
-		time.Sleep(time.Second) // задержка для наглядности
-	}
-	close(ch) // закрываем канал после отправки всех значений
-}
-
-// consumer принимает канал только для чтения (<-chan)
-func consumer(ch <-chan int) {
-	for num := range ch {
-		fmt.Printf("Получено: %d\n", num)
-	}
-}
-
 func main() {
-	ch := make(chan int) // создаем двунаправленный канал
+	var wg sync.WaitGroup
 
-	go producer(ch) // запускаем producer в горутине
-	consumer(ch)    // consumer работает в main горутине
+	input := make(chan string)
+	output1 := make(chan string)
+	output2 := make(chan string)
 
-	fmt.Println("Готово!")
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for s := range input {
+			words := strings.Split(s, " ")
+			for i, w := range words {
+				words[i] = strings.ToUpper(w)
+			}
+			output1 <- strings.Join(words, " ")
+		}
+		close(output1)
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for s := range output1 {
+			vowels := "AEIOUaeiou"
+			for _, v := range vowels {
+				s = strings.Replace(s, string(v), "*", -1)
+			}
+			output2 <- s
+		}
+		close(output2)
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for s := range output2 {
+			fmt.Println(s)
+		}
+	}()
+
+	input <- "Hello world"
+	input <- "Go is awesome"
+	input <- "Concurrency is the future"
+	close(input)
+
+	wg.Wait()
 }
