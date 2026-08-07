@@ -5,24 +5,26 @@ import (
 	"time"
 )
 
+func writeEvery(msg string, seconds time.Duration) <-chan string {
+	messages := make(chan string)
+	go func() {
+		for {
+			time.Sleep(seconds)
+			messages <- msg
+		}
+	}()
+	return messages
+}
+
 func main() {
-	ch1 := make(chan string)
-	ch2 := make(chan string)
-
-	go func() {
-		time.Sleep(1 * time.Second)
-		ch1 <- "one"
-	}()
-
-	go func() {
-		time.Sleep(2 * time.Second)
-		ch2 <- "two"
-	}()
-
-	select {
-	case msg1 := <-ch1:
-		fmt.Println(msg1)
-	case msg2 := <-ch2:
-		fmt.Println(msg2)
+	messagesFromA := writeEvery("Tick", 1*time.Second)
+	messagesFromB := writeEvery("Tock", 3*time.Second)
+	for {
+		select {
+		case msg1 := <-messagesFromA:
+			fmt.Println(msg1)
+		case msg2 := <-messagesFromB:
+			fmt.Println(msg2)
+		}
 	}
 }
