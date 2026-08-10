@@ -1,38 +1,28 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"math/rand"
 	"time"
 )
 
-func worker(heartbeat chan<- struct{}, done <-chan struct{}) {
-	defer close(heartbeat)
-	ticker := time.NewTicker(500 * time.Millisecond)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-done:
-			return
-		case <-ticker.C:
-			heartbeat <- struct{}{} // Отправляем пульс
-		case <-time.After(2 * time.Second):
-			// Долгая операция (может быть обёрнута в отдельный select)
-			log.Println("working...")
-		}
-	}
+// simulateWork имитирует работу сервиса (разное время выполнения)
+func simulateWork(id int, resultChan chan<- string) {
+	delay := time.Duration(rand.Intn(500)) * time.Millisecond
+	time.Sleep(delay)
+	resultChan <- fmt.Sprintf("Результат от сервиса %d (задержка: %v)", id, delay)
 }
 
 func main() {
-	done := make(chan struct{})
-	heartbeat := make(chan struct{})
-	go worker(heartbeat, done)
+	rand.Seed(time.Now().UnixNano())
+	resultChan := make(chan string, 3) // Буферизованный канал для результатов
 
-	// Проверка "пульса" горутины
-	select {
-	case <-heartbeat:
-		log.Println("Горутина жива")
-	case <-time.After(1 * time.Second):
-		log.Fatal("Горутина не отвечает!")
-	}
+	// Запускаем несколько горутин для обработки запроса
+	go simulateWork(1, resultChan)
+	go simulateWork(2, resultChan)
+	go simulateWork(3, resultChan)
+
+	// Берем первый ответ и завершаем работу
+	firstResult := <-resultChan
+	fmt.Println("Первый ответ:", firstResult)
 }
