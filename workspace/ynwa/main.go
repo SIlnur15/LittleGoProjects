@@ -1,68 +1,38 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"time"
 )
 
-// Order представляет структуру заказа
-type Order struct {
-	ID     int
-	Amount float64
-	Valid  bool
+func worker(heartbeat chan<- struct{}, done <-chan struct{}) {
+	defer close(heartbeat)
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-done:
+			return
+		case <-ticker.C:
+			heartbeat <- struct{}{} // Отправляем пульс
+		case <-time.After(2 * time.Second):
+			// Долгая операция (может быть обёрнута в отдельный select)
+			log.Println("working...")
+		}
+	}
 }
 
 func main() {
-	// Создаем каналы для каждого этапа
-	receivedOrders := make(chan Order, 10)  // Принятые заказы
-	validatedOrders := make(chan Order, 10) // Проверенные заказы
-	processedOrders := make(chan Order, 10) // Обработанные заказы
+	done := make(chan struct{})
+	heartbeat := make(chan struct{})
+	go worker(heartbeat, done)
 
-	// Запускаем этапы обработки в отдельных горутинах
-	go receiveOrders(receivedOrders)
-	go validateOrders(receivedOrders, validatedOrders)
-	go processOrders(validatedOrders, processedOrders)
-
-	// Выводим результаты обработки
-	for order := range processedOrders {
-		fmt.Printf("Заказ %d завершен: сумма %.2f, валидность %v\n",
-			order.ID, order.Amount, order.Valid)
+	// Проверка "пульса" горутины
+	select {
+	case <-heartbeat:
+		log.Println("Горутина жива")
+	case <-time.After(1 * time.Second):
+		log.Fatal("Горутина не отвечает!")
 	}
-}
-
-// receiveOrders - этап получения заказов
-func receiveOrders(out chan<- Order) {
-	for i := 1; i <= 5; i++ {
-		order := Order{ID: i, Amount: float64(i) * 10}
-		fmt.Printf("Получен заказ %d\n", order.ID)
-		out <- order
-		time.Sleep(time.Millisecond * 200) // Имитация работы
-	}
-	close(out)
-}
-
-// validateOrders - этап проверки заказов
-func validateOrders(in <-chan Order, out chan<- Order) {
-	for order := range in {
-		// Простая проверка - сумма должна быть больше 20
-		order.Valid = order.Amount > 20
-		fmt.Printf("Проверка заказа %d: валидность %v\n", order.ID, order.Valid)
-		out <- order
-		time.Sleep(time.Millisecond * 300) // Имитация работы
-	}
-	close(out)
-}
-
-// processOrders - этап обработки заказов
-func processOrders(in <-chan Order, out chan<- Order) {
-	for order := range in {
-		if order.Valid {
-			fmt.Printf("Обработка заказа %d\n", order.ID)
-		} else {
-			fmt.Printf("Отмена заказа %d (невалидный)\n", order.ID)
-		}
-		out <- order
-		time.Sleep(time.Millisecond * 400) // Имитация работы
-	}
-	close(out)
 }
