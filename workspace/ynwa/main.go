@@ -1,52 +1,59 @@
-package main
+package concurrency
 
 import (
-	"fmt"
-	"sync"
+	"log"
 	"time"
 )
 
-type TokenBucket struct {
-	tokens         float64
-	maxTokens      float64
-	refillRate     float64 // токенов в секунду
-	lastRefillTime time.Time
-	mutex          sync.Mutex
-}
+// startGoroutineFn представляет сигнатуру функции для запуска горутин
+type startGoroutineFn func(done <-chan interface{}, pulseInterval time.Duration) (heartbeat <-chan interface{})
 
-func NewTokenBucket(maxTokens, refillRate float64) *TokenBucket {
-	return &TokenBucket{
-		tokens:         maxTokens,
-		maxTokens:      maxTokens,
-		refillRate:     refillRate,
-		lastRefillTime: time.Now(),
-	}
-}
+// newSteward создает и возвращает функцию, которая мониторит здоровье горутины (`startGoroutineFn`)
+// и перезапускает её, если она становится нездоровой
+func newSteward(timeout time.Duration, startGoroutine startGoroutineFn) startGoroutineFn {
+	return func(done <-chan interface{}, pulseInterval time.Duration) <-chan interface{} {
+		heartbeat := make(chan interface{})
 
-func (tb *TokenBucket) AllowRequest() bool {
-	tb.mutex.Lock()
-	defer tb.mutex.Unlock()
+		go func() {
+			defer close(heartbeat)
 
-	now := time.Now()
-	elapsed := now.Sub(tb.lastRefillTime).Seconds()
-	tb.tokens += elapsed * tb.refillRate
-	if tb.tokens > tb.maxTokens {
-		tb.tokens = tb.maxTokens
-	}
-	tb.lastRefillTime = now
+			var wardDone chan interface{}
+			var wardHeartbeat <-chan interface{}
 
-	if tb.tokens >= 1 {
-		tb.tokens -= 1
-		return true
-	}
-	return false
-}
+			startWard := func() {
+				wardDone = make(chan interface{})
+				wardHeartbeat = startGoroutine(orDone(wardDone, done), timeout/2)
+			}
 
-func main() {
-	tb := NewTokenBucket(5, 1) // максимум 5 токенов, пополнение 1 токен/сек
-	for i := 1; i <= 10; i++ {
-		allowed := tb.AllowRequest()
-		fmt.Printf("Запрос %d: %v\n", i, allowed)
-		time.Sleep(500 * time.Millisecond)
+			startWard()
+
+			pulse := time.Tick(pulseInterval)
+
+		monitorLoop:
+			for {
+				timeoutSignal := time.After(timeout)
+
+				for {
+					select {
+					case <-pulse:
+						select {
+						case heartbeat <- struct{}{}:
+						default:
+						}
+					case <-wardHeartbeat:
+						continue monitorLoop
+					case <-timeoutSignal:
+						log.Println("steward: ward unhealthy; restarting")
+						close(wardDone)
+						startWard()
+						continue monitorLoop
+					case <-done:
+						return
+					}
+				}
+			}
+		}()
+
+		return heartbeat
 	}
 }
