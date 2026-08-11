@@ -2,27 +2,51 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	"sync"
 	"time"
 )
 
-// simulateWork имитирует работу сервиса (разное время выполнения)
-func simulateWork(id int, resultChan chan<- string) {
-	delay := time.Duration(rand.Intn(500)) * time.Millisecond
-	time.Sleep(delay)
-	resultChan <- fmt.Sprintf("Результат от сервиса %d (задержка: %v)", id, delay)
+type TokenBucket struct {
+	tokens         float64
+	maxTokens      float64
+	refillRate     float64 // токенов в секунду
+	lastRefillTime time.Time
+	mutex          sync.Mutex
+}
+
+func NewTokenBucket(maxTokens, refillRate float64) *TokenBucket {
+	return &TokenBucket{
+		tokens:         maxTokens,
+		maxTokens:      maxTokens,
+		refillRate:     refillRate,
+		lastRefillTime: time.Now(),
+	}
+}
+
+func (tb *TokenBucket) AllowRequest() bool {
+	tb.mutex.Lock()
+	defer tb.mutex.Unlock()
+
+	now := time.Now()
+	elapsed := now.Sub(tb.lastRefillTime).Seconds()
+	tb.tokens += elapsed * tb.refillRate
+	if tb.tokens > tb.maxTokens {
+		tb.tokens = tb.maxTokens
+	}
+	tb.lastRefillTime = now
+
+	if tb.tokens >= 1 {
+		tb.tokens -= 1
+		return true
+	}
+	return false
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-	resultChan := make(chan string, 3) // Буферизованный канал для результатов
-
-	// Запускаем несколько горутин для обработки запроса
-	go simulateWork(1, resultChan)
-	go simulateWork(2, resultChan)
-	go simulateWork(3, resultChan)
-
-	// Берем первый ответ и завершаем работу
-	firstResult := <-resultChan
-	fmt.Println("Первый ответ:", firstResult)
+	tb := NewTokenBucket(5, 1) // максимум 5 токенов, пополнение 1 токен/сек
+	for i := 1; i <= 10; i++ {
+		allowed := tb.AllowRequest()
+		fmt.Printf("Запрос %d: %v\n", i, allowed)
+		time.Sleep(500 * time.Millisecond)
+	}
 }
