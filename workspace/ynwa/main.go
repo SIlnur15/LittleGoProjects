@@ -2,6 +2,7 @@ package concurrency
 
 import (
 	"log"
+	"os"
 	"time"
 )
 
@@ -56,4 +57,23 @@ func newSteward(timeout time.Duration, startGoroutine startGoroutineFn) startGor
 
 		return heartbeat
 	}
+}
+
+// NewStewardCaller демонстрирует использование паттерна steward с примером горутины doWork
+func NewStewardCaller() {
+	log.SetOutput(os.Stdout)
+	log.SetFlags(log.Ltime | log.LUTC)
+
+	doWorkWithSteward := newSteward(4*time.Second, doWork)
+
+	done := make(chan interface{})
+	time.AfterFunc(9*time.Second, func() {
+		log.Println("main: halting steward and ward.")
+		close(done)
+	})
+
+	for range doWorkWithSteward(done, 4*time.Second) {
+	}
+
+	log.Println("Done")
 }
