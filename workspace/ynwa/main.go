@@ -1,79 +1,36 @@
-package concurrency
+package main
 
-import (
-	"log"
-	"os"
-	"time"
-)
+import "fmt"
 
-// startGoroutineFn представляет сигнатуру функции для запуска горутин
-type startGoroutineFn func(done <-chan interface{}, pulseInterval time.Duration) (heartbeat <-chan interface{})
+func countTo(max int) (<-chan int, func()) {
+	ch := make(chan int)
+	done := make(chan struct{})
 
-// newSteward создает и возвращает функцию, которая мониторит здоровье горутины (`startGoroutineFn`)
-// и перезапускает её, если она становится нездоровой
-func newSteward(timeout time.Duration, startGoroutine startGoroutineFn) startGoroutineFn {
-	return func(done <-chan interface{}, pulseInterval time.Duration) <-chan interface{} {
-		heartbeat := make(chan interface{})
-
-		go func() {
-			defer close(heartbeat)
-
-			var wardDone chan interface{}
-			var wardHeartbeat <-chan interface{}
-
-			startWard := func() {
-				wardDone = make(chan interface{})
-				wardHeartbeat = startGoroutine(orDone(wardDone, done), timeout/2)
-			}
-
-			startWard()
-
-			pulse := time.Tick(pulseInterval)
-
-		monitorLoop:
-			for {
-				timeoutSignal := time.After(timeout)
-
-				for {
-					select {
-					case <-pulse:
-						select {
-						case heartbeat <- struct{}{}:
-						default:
-						}
-					case <-wardHeartbeat:
-						continue monitorLoop
-					case <-timeoutSignal:
-						log.Println("steward: ward unhealthy; restarting")
-						close(wardDone)
-						startWard()
-						continue monitorLoop
-					case <-done:
-						return
-					}
-				}
-			}
-		}()
-
-		return heartbeat
+	cancel := func() {
+		close(done)
 	}
+
+	go func() {
+		for i := 0; i < max; i++ {
+			select {
+			case <-done:
+				return
+			default:
+				ch <- i
+			}
+		}
+		close(ch)
+	}()
+	return ch, cancel
 }
 
-// NewStewardCaller демонстрирует использование паттерна steward с примером горутины doWork
-func NewStewardCaller() {
-	log.SetOutput(os.Stdout)
-	log.SetFlags(log.Ltime | log.LUTC)
-
-	doWorkWithSteward := newSteward(4*time.Second, doWork)
-
-	done := make(chan interface{})
-	time.AfterFunc(9*time.Second, func() {
-		log.Println("main: halting steward and ward.")
-		close(done)
-	})
-
-	for range doWorkWithSteward(done, 4*time.Second) {
+func main() {
+	ch, cancel := countTo(10)
+	for i := range ch {
+		if i > 3 {
+			break
+		}
+		fmt.Println(i)
 	}
-
-	log.Println("Done")
+	cancel()
 }
