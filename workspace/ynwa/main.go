@@ -1,43 +1,22 @@
 package main
 
-import (
-	"fmt"
-	"sync"
-	"time"
-)
-
-func workerWithWG(wg *sync.WaitGroup, stop <-chan struct{}, id int) {
-	defer wg.Done()
-
-	for {
-		select {
-		case <-stop:
-			fmt.Printf("Worker %d received stop signal\n", id)
-			return
-		default:
-			fmt.Printf("Worker %d working...\n", id)
-			time.Sleep(time.Duration(id) * 500 * time.Millisecond)
-		}
-	}
-}
+import "fmt"
 
 func main() {
-	var wg sync.WaitGroup
-	stop := make(chan struct{})
+	ch1 := make(chan int) // небуферизованный канал
+	ch2 := make(chan int) // небуферизованный канал
 
-	// Запускаем горутины
-	for i := 1; i <= 3; i++ {
-		wg.Add(1)
-		go workerWithWG(&wg, stop, i)
-	}
+	go func() {
+		ch1 <- 1 // отправка в ch1
+		fmt.Println("Sent 1 to ch1")
+		<-ch2 // получение из ch2
+	}()
 
-	// Даем поработать 5 секунд
-	time.Sleep(5 * time.Second)
+	go func() {
+		ch2 <- 2 // отправка в ch2
+		fmt.Println("Sent 2 to ch2")
+		<-ch1 // получение из ch1
+	}()
 
-	// Останавливаем все горутины
-	close(stop)
-
-	// Ждем завершения всех горутин
-	wg.Wait()
-	fmt.Println("All workers stopped")
+	select {} // бесконечное ожидание
 }
