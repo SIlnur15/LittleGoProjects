@@ -5,17 +5,26 @@ import (
 	"sync"
 )
 
-var counter int
+var (
+	mu      sync.Mutex
+	counter int
+)
+
+func increment() {
+	mu.Lock()
+	counter++
+	mu.Unlock()
+}
 
 func main() {
 	var wg sync.WaitGroup
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			counter++ // Небезопасный инкремент
+			increment()
 		}()
 	}
 	wg.Wait()
-	fmt.Println("Final counter:", counter)
+	fmt.Println("Counter:", counter)
 }
