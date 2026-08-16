@@ -2,44 +2,17 @@ package main
 
 import (
 	"fmt"
-	"sync"
-	"time"
+	"sync/atomic"
 )
-
-var (
-	data    string
-	rwMutex sync.RWMutex
-)
-
-func writer(id int) {
-	rwMutex.Lock() // Закрыл дверь писателей
-	defer rwMutex.Unlock()
-
-	fmt.Printf("Писатель %d вошел\n", id)
-	data = fmt.Sprintf("данные от писателя %d", id)
-	time.Sleep(100 * time.Millisecond)
-	fmt.Printf("Писатель %d вышел\n", id)
-}
-
-func reader(id int) {
-	rwMutex.RLock() // Проверил, нет ли писателя
-	defer rwMutex.RUnlock()
-
-	fmt.Printf("Читатель %d вошел\n", id)
-	fmt.Printf("Читатель %d прочитал: %s\n", id, data)
-	time.Sleep(50 * time.Millisecond)
-	fmt.Printf("Читатель %d вышел\n", id)
-}
 
 func main() {
-	// Запускаем писателей и читателей
-	for i := 0; i < 3; i++ {
-		go writer(i)
-	}
+	var score int32 = 100 // Начальное значение
 
-	for i := 0; i < 5; i++ {
-		go reader(i)
-	}
+	success := atomic.CompareAndSwapInt32(&score, 100, 150) // Успешный случай: Проверяем: "Если score равен 100, то сделай его 150"
+	fmt.Println("Успешно?", success)                        // Выведет: true
+	fmt.Println("Score:", score)                            // Выведет: 150
 
-	time.Sleep(2 * time.Second)
+	success2 := atomic.CompareAndSwapInt32(&score, 100, 200) // Неуспешный случай: Проверяем: "Если score равен 100, то сделай его 200". Но score уже равен 150! Условие не выполнено.
+	fmt.Println("Успешно?", success2)                        // Выведет: false
+	fmt.Println("Score:", score)                             // Выведет: 150 (значение НЕ изменилось)
 }
