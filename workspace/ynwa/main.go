@@ -22,7 +22,7 @@ func main() {
 		mu.Lock()
 		counter++
 		fmt.Println("Counter:", counter)
-		cond.Signal() // отправляем сигнал одной горутине
+		cond.Broadcast() // отправляем сигнал всем горутинам
 		mu.Unlock()
 	}
 }
