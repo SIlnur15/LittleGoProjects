@@ -2,64 +2,54 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"sync"
+	"time"
 )
 
-// joinChannels принимает несколько read-only каналов и объединяет их в один.
-func joinChannels(chs ...<-chan int) <-chan int {
-	mergedCh := make(chan int)
-	var wg sync.WaitGroup
+// worker - функция-воркер для сканирования портов
+func worker(ports <-chan int, results chan<- string, wg *sync.WaitGroup) {
+	defer wg.Done() // Уменьшаем счетчик при завершении работы воркера
 
-	for _, ch := range chs {
-		wg.Add(1)
-		go func(ch <-chan int) {
-			defer wg.Done()
-			for v := range ch {
-				mergedCh <- v
-			}
-		}(ch)
-	}
-
-	go func() {
-		wg.Wait()
-		close(mergedCh)
-	}()
-
-	return mergedCh
-}
-
-// sendAll отправляет все значения из nums в ch, затем закрывает его.
-func sendAll(ch chan<- int, nums []int) {
-	defer close(ch)
-	for _, n := range nums {
-		ch <- n
+	for port := range ports {
+		address := fmt.Sprintf("scanme.nmap.org:%d", port)
+		conn, err := net.DialTimeout("tcp", address, 1*time.Second)
+		if err == nil {
+			conn.Close()
+			results <- fmt.Sprintf("Port %d is open", port)
+		} else {
+			results <- fmt.Sprintf("Port %d is closed", port)
+		}
 	}
 }
 
 func main() {
-	// Данные вынесены: горутины только отправляют, не хранят
-	dataSets := [][]int{
-		{1, 2, 3},
-		{20, 10, 30},
-		{300, 200, 100},
+	ports := make(chan int, 100)
+	results := make(chan string)
+	var wg sync.WaitGroup
+
+	// Запускаем пул воркеров
+	for i := 0; i < cap(ports); i++ {
+		wg.Add(1)
+		go worker(ports, results, &wg)
 	}
 
-	channels := make([]chan int, len(dataSets))
-	for i := range channels {
-		channels[i] = make(chan int)
-	}
+	// Горутина для сбора результатов
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
 
-	for i, ch := range channels {
-		go sendAll(ch, dataSets[i])
-	}
+	// Отправляем номера портов для сканирования
+	go func() {
+		for i := 1; i <= 1024; i++ {
+			ports <- i
+		}
+		close(ports) // Закрываем канал портов после отправки всех заданий
+	}()
 
-	// Конвертируем []chan int → []<-chan int для joinChannels
-	readOnly := make([]<-chan int, len(channels))
-	for i, ch := range channels {
-		readOnly[i] = ch
-	}
-
-	for num := range joinChannels(readOnly...) {
-		fmt.Println(num)
+	// Выводим результаты
+	for result := range results {
+		fmt.Println(result)
 	}
 }
