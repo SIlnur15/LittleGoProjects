@@ -1,31 +1,54 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"sync"
 	"time"
 )
 
-func writeEvery(msg string, seconds time.Duration) <-chan string {
-	messages := make(chan string)
-	go func() {
-		for {
-			time.Sleep(seconds)
-			messages <- msg
+// generateTriangular — это функция-генератор (Producer).
+// ЕЕ ОТВЕТСТВЕННОСТЬ:
+// 1. Генерировать треугольные числа.
+// 2. Писать их в канал numbers.
+// 3. Закрыть канал numbers, когда числа закончились.
+// 4. Внимательно слушать ctx.Done() (сигнал quit), чтобы быстро завершиться, если попросят.
+func generateTriangular(ctx context.Context, numbers chan<- int, limit int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	defer close(numbers) // Правило: продюсер закрывает канал данных
+
+	for i := 1; i <= limit; i++ {
+		// Вычисляем треугольное число
+		triNum := i * (i + 1) / 2
+
+		select {
+		case numbers <- triNum:
+			// Успешно отправили число
+		case <-ctx.Done():
+			// Получен сигнал отмены (quit) от main!
+			// Генератор не закрывает quit, он только реагирует на него.
+			return
 		}
-	}()
-	return messages
+
+		time.Sleep(100 * time.Millisecond) // Имитация полезной нагрузки для наглядности
+	}
 }
 
 func main() {
-	messagesFromA := writeEvery("Tick", 1*time.Second)
-	messagesFromB := writeEvery("Tock", 2*time.Second)
-
-	for i := 1; i <= 3; i++ {
-		select {
-		case msg1 := <-messagesFromA:
-			fmt.Println(msg1)
-		case msg2 := <-messagesFromB:
-			fmt.Println(msg2)
+	var wg sync.WaitGroup
+	ctx, cancel := context.WithCancel(context.Background())
+	numbers := make(chan int)
+	wg.Add(1)
+	go generateTriangular(ctx, numbers, 50, &wg)
+	for num := range numbers {
+		if num < 50 {
+			fmt.Println(num)
+		} else {
+			fmt.Println(num)
+			cancel()
+			break
 		}
 	}
+	wg.Wait()
+	fmt.Println("Прекращаем генерацию чисел")
 }
