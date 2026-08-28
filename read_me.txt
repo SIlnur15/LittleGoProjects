@@ -1,4 +1,0 @@
-remote_name little_go_projects
-branch_name master
-
-
