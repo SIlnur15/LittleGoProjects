@@ -33,6 +33,25 @@ func GetMovie(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&Movie{})
 }
 
+func AddMovie(w http.ResponseWriter, r *http.Request) {
+	var movie Movie
+	_ = json.NewDecoder(r.Body).Decode(&movie)
+	movies = append(movies, movie)
+	json.NewEncoder(w).Encode(movies)
+}
+
+func DeleteMovie(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	for index, item := range movies {
+		if item.Title == params["title"] {
+			movies = append(movies[:index], movies[index+1:]...)
+			break
+		}
+	}
+	// Отправляем ответ после цикла
+	json.NewEncoder(w).Encode(movies)
+}
+
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/movies", GetMovies).Methods("GET")
