@@ -55,5 +55,8 @@ func DeleteMovie(w http.ResponseWriter, r *http.Request) {
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/movies", GetMovies).Methods("GET")
+	router.HandleFunc("/movies/{title}", GetMovie).Methods("GET")
+	router.HandleFunc("/movies", AddMovie).Methods("POST")
+	router.HandleFunc("/movies/{title}", DeleteMovie).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
