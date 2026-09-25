@@ -1,18 +1,17 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
-func main() {
-	app := fiber.New()
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, Fiber! 👋")
-	})
-
-	app.Listen(":3000")
-	fmt.Println("hello Haidaric")
+// Базовый пример middleware для логирования запросов
+func LoggerMiddleware(c *gin.Context) {
+	start := time.Now()
+	c.Next() // Пропускаем запрос дальше
+	// После обработки запроса
+	latency := time.Since(start)
+	log.Printf("[%s] %s | %v", c.Request.Method, c.Request.URL.Path, latency)
 }
