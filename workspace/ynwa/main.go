@@ -1,17 +1,19 @@
 package main
 
 import (
-	"log"
-	"time"
+	"database/sql"
+	"fmt"
 
-	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-// Базовый пример middleware для логирования запросов
-func LoggerMiddleware(c *gin.Context) {
-	start := time.Now()
-	c.Next() // Пропускаем запрос дальше
-	// После обработки запроса
-	latency := time.Since(start)
-	log.Printf("[%s] %s | %v", c.Request.Method, c.Request.URL.Path, latency)
+func listDrivers() {
+	for _, driver := range sql.Drivers() {
+		fmt.Printf("Driver: %v\n", driver)
+	}
+}
+
+func main() {
+	// db, err := sql.Open("mysql", "user:password@tcp(127.0.0.1:3306)/dbname")
+	listDrivers()
 }
