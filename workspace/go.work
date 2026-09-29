@@ -1,8 +1,9 @@
-go 1.26.0
+go 1.27.1
 
 use (
 	./ginWebFramework
 	./gorilla-demo
+	./gormProj
 	./grpc-demo
 	./websocket-lesson
 	./ynwa
