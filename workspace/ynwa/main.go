@@ -1,12 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+	"os"
+)
 
-func Identity[T any](v T) T {
-	return v
+func handler(w http.ResponseWriter, r *http.Request) {
+	env := os.Getenv("APP_ENV")
+	fmt.Fprintf(w, "Приложение работает! Среда: %s", env)
 }
 
 func main() {
-	fmt.Println(Identity(42))      // int
-	fmt.Println(Identity("hello")) // string
+	http.HandleFunc("/", handler)
+	port := "8080"
+	fmt.Println("Сервер запущен на порту", port)
+	http.ListenAndServe(":"+port, nil)
 }
