@@ -1,0 +1,21 @@
+=== RUN   /home/mars/go/LittleGoProjects/workspace_tsts/tsts/adder.go:4.2,5.1 1 1
+== RUN   TestAddTable/2+3=5
+=== PAUSE TestAddTable/2+3=5
+=== RUN   TestAddTable/0+0=0
+=== PAUSE TestAddTable/0+0=0
+=== RUN   TestAddTable/-1+1=0
+=== PAUSE TestAddTable/-1+1=0
+=== RUN   TestAddTable/-1+6=0
+=== PAUSE TestAddTable/-1+6=0
+=== CONT  TestAddTable/2+3=5
+=== CONT  TestAddTable/-1+6=0
+=== CONT  TestAddTable/-1+1=0
+=== CONT  TestAddTable/0+0=0
+--- PASS: TestAddTable (0.00s)
+    --- PASS: TestAddTable/2+3=5 (0.00s)
+    --- PASS: TestAddTable/-1+6=0 (0.00s)
+    --- PASS: TestAddTable/-1+1=0 (0.00s)
+    --- PASS: TestAddTable/0+0=0 (0.00s)
+PASS
+coverage: 100.0% of statements
+ok  	command-line-arguments	0.002s	coverage: 100.0% of statements
