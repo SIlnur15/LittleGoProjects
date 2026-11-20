@@ -65,3 +65,16 @@ func TestClient(t *testing.T) {
 		t.Errorf("unexpected body: got %v want %v", string(body), expected)
 	}
 }
+
+// 3. TLS-сервер для тестирования HTTPS
+
+ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintln(w, "Hello, client")
+}))
+defer ts.Close()
+
+client := ts.Client()
+res, err := client.Get(ts.URL)
+if err != nil {
+    t.Fatal(err)
+}
