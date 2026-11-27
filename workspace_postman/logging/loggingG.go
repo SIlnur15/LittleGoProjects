@@ -14,7 +14,12 @@ func main() {
 	errLog := log.New(os.Stderr, "ERROR: ", log.LstdFlags|log.Lshortfile)
 
 	// Логгер в файл
-	file, _ := os.OpenFile("debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	file, err := os.OpenFile("debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		// Используем errLog.Fatalf — он выведет красивую ошибку с префиксом ERROR и завершит программу
+		errLog.Fatalf("Не удалось открыть файл debug.log: %v", err)
+	}
+	defer file.Close()
 
 	debugLog := log.New(io.MultiWriter(file, os.Stdout), "DEBUG: ", log.LstdFlags)
 	mainLog.Println("Приложение запущено")
