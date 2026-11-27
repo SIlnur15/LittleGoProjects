@@ -1,23 +1,19 @@
 package main
 
 import (
-	"io"
-	"log"
-	"os"
+	"fmt"
+	"slices"
 )
 
 func main() {
-	// Основной логгер — в stderr
-	mainLog := log.New(os.Stderr, "MAIN: ", log.LstdFlags)
-
-	// Логгер для ошибок — в stderr с другим префиксом
-	errLog := log.New(os.Stderr, "ERROR: ", log.LstdFlags|log.Lshortfile)
-
-	// Логгер в файл
-	file, _ := os.OpenFile("debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-
-	debugLog := log.New(io.MultiWriter(file, os.Stdout), "DEBUG: ", log.LstdFlags)
-	mainLog.Println("Приложение запущено")
-	errLog.Println("Невозможно подключиться к устройству")
-	debugLog.Println("Полный дамп данных...")
+	var n int
+	fmt.Scan(&n)
+	slc := make([]int, n)
+	for i := 0; i < n; i++ {
+		fmt.Scan(&slc[i])
+	}
+	slices.Reverse(slc)
+	for idx := range slc {
+		fmt.Print(slc[idx], " ")
+	}
 }
